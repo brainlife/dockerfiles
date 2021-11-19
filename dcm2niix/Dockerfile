@@ -1,5 +1,5 @@
-FROM ubuntu:trusty
-MAINTAINER <soichih@gmail.com> # feel free to change/adopt
+FROM ubuntu:21.04
+ARG version
 
 # Install Dependencies
 RUN apt-get update && apt-get upgrade -y && \
@@ -8,7 +8,7 @@ RUN apt-get update && apt-get upgrade -y && \
 
 # Get dcm2niix from github and compile
 RUN cd /tmp && \
-	git clone https://github.com/rordenlab/dcm2niix.git && \
+	git clone https://github.com/rordenlab/dcm2niix.git -b $version && \
 	cd dcm2niix && mkdir build && cd build && \
 	cmake -DBATCH_VERSION=ON -DUSE_OPENJPEG=ON .. && \
 	make && make install
