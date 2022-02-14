@@ -23,3 +23,4 @@ ENV PYTHONNOUSERSITE=true
 ENV LC_CTYPE=C.UTF-8
 
 RUN pip3 install fury
+RUN pip3 install xvfbwrapper
