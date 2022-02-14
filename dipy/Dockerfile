@@ -23,4 +23,8 @@ ENV PYTHONNOUSERSITE=true
 ENV LC_CTYPE=C.UTF-8
 
 RUN pip3 install fury
+
+#Install xvfb stuff
 RUN pip3 install xvfbwrapper
+RUN apt-get install -y xvfb x11-xkb-utils
+#RUN apt-get install -y xfonts-100dpi xfonts-75dpi xfonts-scalable xfonts-cyrillic
