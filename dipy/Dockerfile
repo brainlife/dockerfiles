@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y python3-pip git python3-tk jq python3-pil cmake
 
 RUN pip3 install numpy cython scipy matplotlib==2.2.3 h5py hdf5storage nibabel nipype
-RUN pip3 install cvxpy scikit-learn imageio pandas seaborn joblib
+RUN pip3 install cvxpy scikit-learn imageio pandas seaborn joblib nilearn
 
 #RUN git clone https://github.com/nipy/dipy.git && cd dipy && pip install .
 RUN pip3 install dipy==1.4.1
