@@ -1,0 +1,33 @@
+FROM python:3.9
+
+RUN pip install --upgrade pip
+RUN pip install matplotlib scikit-learn pandas seaborn jupyter pyvista ipyvtklink 
+
+#requested by guio
+RUN pip install https://api.github.com/repos/autoreject/autoreject/zipball/master
+
+#install mne-bids-pipeline somewhere
+RUN pip install mne-bids coloredlogs tqdm pandas scikit-learn json_tricks fire nibabel
+RUN git clone https://github.com/mne-tools/mne-bids-pipeline.git /mne-bids-pipeline
+
+#needed by mne
+#pyvista IPython ipywidgets ipyvtklink PyQt5 nibabel xvfbwrapper
+
+#needed by notebook plugin for pyvista
+RUN apt-get update && apt-get -y install libgl1 mesa-utils libgl1-mesa-glx
+
+RUN apt-get install -y xvfb
+
+ENV PYVISTA_OFF_SCREEN=true
+ENV PYVISTA_USE_IPYVTK=true
+
+RUN pip install mne==1.0.2 
+
+#ENV MNE_3D_BACKEND=offscreen
+#ENV MNE_3D_BACKEND=notebook
+#ENV PYVISTA_OFF_SCREEN=true
+
+RUN pip install IPython ipywidgets
+
+ADD test.py /test.py
+RUN python3 /test.py
