@@ -38,7 +38,7 @@ ENV PATH=$PATH:/mrtrix3/bin
 #RUN pip3 install torch torchvision
 
 RUN pip3.7 install -q --upgrade pip \
-    && pip3.7 install -q wheel numpy scipy nilearn matplotlib scikit-image nibabel \
+    && pip3.7 install -q wheel numpy scipy nilearn matplotlib scikit-image nibabel==3.2.2 \
     && pip3.7 install -q torch==1.6.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 
 #install batchgenerator/tractseg
