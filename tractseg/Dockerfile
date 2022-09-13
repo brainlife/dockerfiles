@@ -25,7 +25,7 @@ RUN cd /usr/src \
 
 # Install fsl (needed for bet and flirt)
 RUN apt-get update -qq \
-    && apt-get install -qq --no-install-recommends fsl-core \
+    && apt-get install -qq --no-install-recommends fsl-core fsl-first-data \
     && apt-get clean -qq \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
