@@ -1,1 +1,1 @@
-singularity exec docker://brainlife/mne:1.0.2 python3
+singularity exec docker://brainlife/mne:1.2.1 python3
