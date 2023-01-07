@@ -17,8 +17,7 @@ RUN apt-get install -y wget
 
 #compile / install trekker
 #RUN git clone https://github.com/dmritrekker/trekker /trekker
-RUN wget https://github.com/dmritrekker/trekker/archive/refs/tags/v0.8.tar.gz && tar -xvf v0.8.tar.gz
+RUN wget https://github.com/dmritrekker/trekker/archive/refs/tags/v0.4.tar.gz && tar -xvf v0.4.tar.gz
 #RUN mkdir -p /trekker/build/Linux && cd /trekker/build/Linux && cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -DBuild_Python3_WRAPPER=ON -DPython3_EXECUTABLE=python3 ../../
 #RUN cd /trekker/build/Linux && cmake --build . --config Release --target install --parallel 8
-RUN cd /trekker-0.8 && . ./build_Linux.sh
-RUN pip3 install /trekker-0.8/binaries/Trekker-0.8-cp37-cp37m-linux_x86_64.whl
+RUN cd /trekker-0.4 && . ./build_Linux.sh
