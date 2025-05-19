@@ -1,24 +1,52 @@
-FROM neurodebian:nd16.04
-MAINTAINER Soichi Hayashi
+# 1) Base image
+FROM ubuntu:20.04
+MAINTAINER Gabriele Amorosino
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install sudo python jq time ants git curl unzip
+# 2) Install system prerequisites for conda & unzip
+RUN set -xe \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends \
+      wget bzip2 ca-certificates curl unzip git \
+ && rm -rf /var/lib/apt/lists/*
 
-#install hcp pipeline so that we can have the MNI templates (to root)
-RUN git clone https://github.com/Washington-University/HCPpipelines.git
+# 3) Install Miniconda
+ENV CONDA_DIR=/opt/conda
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh \
+ && bash /tmp/miniconda.sh -b -p $CONDA_DIR \
+ && rm /tmp/miniconda.sh \
+ && $CONDA_DIR/bin/conda clean -afy
 
-#http://www.bic.mni.mcgill.ca/ServicesAtlases/ICBM152NLin2009
-RUN curl http://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_sym_09a_nifti.zip -o tmp.zip && unzip -o tmp.zip -d /atlas && rm tmp.zip
-RUN curl http://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_asym_09a_nifti.zip -o tmp.zip && unzip -o tmp.zip -d /atlas && rm tmp.zip
-RUN curl http://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_sym_09c_nifti.zip -o tmp.zip && unzip -o tmp.zip -d /atlas && rm tmp.zip
-RUN curl http://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_asym_09c_nifti.zip -o tmp.zip && unzip -o tmp.zip -d /atlas && rm tmp.zip
+ENV PATH=$CONDA_DIR/bin:$PATH
 
-#make it work under singularity
-RUN ldconfig && mkdir -p /N/u /N/home /N/dc2 /N/soft /mnt/scratch /share1
+# 4) Create & activate a conda env with ANTs 2.3.1 from aramislab
+RUN conda update -y conda \
+ && conda create -y -n ants-env ants=2.3.1=hf484d3e_0 -c aramislab \
+ && conda clean -afy
 
-ENV PATH=$PATH:/usr/lib/ants
-ENV ANTSPATH=/usr/lib/ants
+# 5) Make sure the env is activated by default
+SHELL ["conda", "run", "-n", "ants-env", "/bin/bash", "-c"]
 
-RUN apt-get -y install bc
+# 6) Clone the HCP Pipelines repo
+RUN git clone https://github.com/Washington-University/HCPpipelines.git /opt/HCPpipelines
 
+# 7) Download & unpack the four MNI152 templates into /atlas
+RUN mkdir -p /atlas \
+ && curl -fsSL http://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_asym_09c_nifti.zip \
+      -o /tmp/tmp.zip \
+ && unzip -o /tmp/tmp.zip -d /atlas && rm /tmp/tmp.zip \
+ && curl -fsSL http://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_sym_09c_nifti.zip \
+      -o /tmp/tmp.zip \
+ && unzip -o /tmp/tmp.zip -d /atlas && rm /tmp/tmp.zip \
+ && curl -fsSL http://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_asym_09a_nifti.zip \
+      -o /tmp/tmp.zip \
+ && unzip -o /tmp/tmp.zip -d /atlas && rm /tmp/tmp.zip \
+ && curl -fsSL http://www.bic.mni.mcgill.ca/~vfonov/icbm/2009/mni_icbm152_nlin_sym_09a_nifti.zip \
+      -o /tmp/tmp.zip \
+ && unzip -o /tmp/tmp.zip -d /atlas && rm /tmp/tmp.zip
 
+# 8) Set ANTSPATH and PATH for ANTs
+ENV ANTSPATH=/opt/conda/envs/ants-env/bin
+ENV PATH=$ANTSPATH:$PATH
 
+# 9) Default to bash in the ants env
+CMD ["bash"]
